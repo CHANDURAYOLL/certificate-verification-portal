@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Botx Automations</title>
+
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+        integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/main.css"/>
+</head>
+
+<body id="vanta-canvas">
+    <div class="container-fluid">
+        <!-- Verification Modal -->
+        <div class="modal fade" id="verificationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Certificate Verification</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div align="center" id="innerborder" style="padding: 2em">
+                            <h3 id="output_message"></h3>
+                            <button style="display: none;" id="downloadbtn" class="btn btn-warning" type="button">Download Certificate</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container-fluid cert_position">
+            <div class="row">
+                <div class="col-md-7">
+                    <h1>Verify <span class="cert_span"> Certificate</span></h1>
+                    <p> Verify the Credibility of the certificates
+                        <br>Sample CertNum = ABCD0001-ABCD0010
+                    </p>
+                </div>
+            </div>
+            <form class="form-horizontal" id="certform">
+                <div class="row form">
+                    <div class="col col-md-3 cert_form">
+                        <div class="form-group">
+                            <input id="inputcertnum" type="text" placeholder="ENTER CERTIFICATE NUMBER IN CAPITAL" name="certnum"
+                                class="form-control name" maxlength="12">
+                        </div>
+                    </div>
+                </div>
+                <button id="verifybutton" type="button" class="btn btn-verify" data-toggle="modal" data-target="#verificationModal">Verify</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Library -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-analytics.js"></script>
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <!-- Vanta.js and Background Animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+    <script src="assets/js/vanta_globe.js"></script>
+
+    <!-- Custom Script -->
+    <script>
+        // Sample certificate data
+        const certificates = {
+             "ABCD0001": {
+        "Department": "Content Development - DevOps Subsidary",
+        "Designation": "JUNIOR CONTENT WRITER",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "VERMA"
+    },
+    "ABCD0002": {
+        "Department": "Content Development - DevOps Subsidary",
+        "Designation": "JUNIOR GRAPHICS DESIGNER",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "SELVA"
+    },
+    "ABCD0003": {
+        "Department": "Operations Department",
+        "Designation": "JUNIOR GRAPHICS DESIGNER",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "SHREYA"
+    },
+    "ABCD0004": {
+        "Department": "Operations Department",
+        "Designation": "SYSTEMS ENGINEER",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "ASHRAF"
+    },
+    "ABCD0005": {
+        "Department": "Human Resources",
+        "Designation": "HR EXECUTIVE",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "PRIYA"
+    },
+    "ABCD0006": {
+        "Department": "Sales Department",
+        "Designation": "SALES ASSOCIATE",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "RAHUL"
+    },
+    "ABCD0007": {
+        "Department": "Information Technology",
+        "Designation": "SOFTWARE DEVELOPER",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "AMIT"
+    },
+    "ABCD0008": {
+        "Department": "Marketing Department",
+        "Designation": "MARKETING SPECIALIST",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "NEHA"
+    },
+    "ABCD0009": {
+        "Department": "Finance Department",
+        "Designation": "ACCOUNTANT",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "ROHIT"
+    },
+    "ABCD0010": {
+        "Department": "Legal Department",
+        "Designation": "LEGAL ASSISTANT",
+        "Link": "https://mega.nz/file/DMpWwLZB#1s33vCydL2Glg3SV1jUs-R_2XJhpngLeMdOjCkvrIZk",
+        "Name": "KAVYA"
+    }
+};
+
+        // Vanta background animation
+        VANTA.GLOBE({
+            el: "#vanta-canvas",
+            mouseControls: false,
+            touchControls: false,
+            gyroControls: false,
+            minHeight: 100.00,
+            minWidth: 100.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0xFF0000,
+            backgroundColor: 0x000000,
+            size: 1.2,
+        });
+
+        // Certificate verification function
+        document.getElementById("verifybutton").addEventListener("click", function () {
+            const certNumber = document.getElementById("inputcertnum").value.trim().toUpperCase();
+            const certData = certificates[certNumber];
+
+            if (certData) {
+                document.getElementById("output_message").innerHTML = `
+                    <strong>Certificate Verified!</strong><br>
+                    Name: ${certData.Name}<br>
+                    Department: ${certData.Department}<br>
+                    Designation: ${certData.Designation}
+                `;
+
+                // Show the download button if the certificate is verified
+                const downloadBtn = document.getElementById("downloadbtn");
+                downloadBtn.style.display = "inline-block";
+
+                // Attach the certificate link to the download button
+                downloadBtn.onclick = function () {
+                    window.open(certData.Link, "_blank");
+                };
+            } else {
+                document.getElementById("output_message").innerHTML = "Certificate not found.";
+                document.getElementById("downloadbtn").style.display = "none";
+            }
+        });
+    </script>
+</body>
+</html>
